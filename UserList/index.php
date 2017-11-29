@@ -41,6 +41,8 @@
                 <div style="width:20%;float:left;"></div>
                 <div style="width:60%;float:initial;">
 
+                    UserList Goes Here
+
                 </div>
                 <div style="width:20%;float:right;"></div>
             </div>
