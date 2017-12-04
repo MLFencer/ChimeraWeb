@@ -55,13 +55,14 @@
                             {
                                 $userPassword = $_POST['password'];
                                 $userId = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
-                                $userPassword = crypt($userPassword, $userPassword);
-
+                                $options = [ 'cost' => '10', ];
+                                $userPassword = password_hash($userPassword, PASSWORD_BCRYPT, $options);
                                 try {
                                     $db = new PDO("mysql:host=$server;dbname=$database", $username, $password);
                                     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                                     $sql="INSERT INTO chimeraSecurityUsers (userId, userName, userEmail, userPassword, userMinecraftUsername, createdById) VALUES ('".$userId."','".$_POST['username']."','".$_POST['email']."','".$userPassword."','".$_POST['mcUsername']."','00000000-0000-0000-0000-000000000000')";
-                                    $db->exec($sql);
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
                                     echo "<h5>You have Registered!</h5>";
                                     $db=null;
                                     echo "<meta http-equiv=\"Refresh\" content=\"2; url=../\">";
@@ -96,8 +97,6 @@
         </div>
     </div>
 </div>
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>

@@ -17,3 +17,53 @@
     position: relative;
     margin-top: 1%;
 }
+
+.userList{
+    width: 100%;
+}
+
+.userList table{
+    margin: 0 auto;
+    color:white;
+}
+
+#userListRow{
+ height: 30pt;
+    font-size: medium;
+}
+
+#userListHeader{
+    text-align: center;
+    width: 33%;
+    font-size: large;
+}
+
+#SideColumn{
+    text-align:center;
+    border: 1px solid #00a3cc;
+    border-radius: 4px;
+    margin-bottom: 10%;
+    padding-bottom: 90%;
+    margin-right: auto;
+    padding-right: 15px;
+}
+
+#MainColumn{
+    margin-bottom: 10%;
+    padding-bottom: 90%;
+    float:left;
+    width:80%;
+    background-color: transparent;
+}
+
+#LoggedIn{
+    border-bottom: 1px solid #00a3cc;
+    background-color: black;
+    height: 30px;
+}
+
+#LoginBar{
+    float: right;
+    color: white;
+    padding-right: 10%;
+}
