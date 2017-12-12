@@ -16,9 +16,15 @@ function isLoggedIn()
     $time = $time - (60*30);
     $timestamp = date('Y-m-d H:i:s', $time);
 
+    if(!isset($_COOKIE['chimeraSession'])) {
+        return "false";
+    } else {
+        $sessionId = $_COOKIE['chimeraSession'];
+    }
+
     $db = new PDO("mysql:host=$server;dbname=$database", $username, $password);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql="SELECT userId FROM chimeraSessions WHERE sessionIP = '$ip' AND createdDateTime > '$timestamp' and statusId = '00000000-0000-0000-0000-000000000000'";
+    $sql="SELECT userId FROM chimeraSessions WHERE sessionIP = '$ip' AND createdDateTime > '$timestamp' and statusId = '00000000-0000-0000-0000-000000000000' and sessionId = '$sessionId'";
     $stmt=$db->prepare($sql);
     $stmt->execute();
     $result=$stmt->fetch();

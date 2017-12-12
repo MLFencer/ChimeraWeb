@@ -67,3 +67,21 @@
     color: white;
     padding-right: 10%;
 }
+
+#GalleryUploadBar{
+    float: right;
+    color: white;
+    padding-right: 5%;
+}
+#GalleryHeader{
+    border-bottom: 1px dashed #00a3cc;
+    height: 32px;
+}
+#GalleryAlbumList {
+    min-height: 1000px;
+    margin-top: 10px;
+}
+#GalleryArea{
+    border: 1px solid #00a3cc;
+    border-radius: 4px;
+}

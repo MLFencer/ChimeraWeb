@@ -60,28 +60,30 @@
                             $stmt=$db->prepare($sql);
                             $stmt->execute();
                             $result=$stmt->fetch();
-                            if(password_verify($_POST['password'], $result['userPassword']))
-                            {
-                                $db2 = new PDO("mysql:host=$server;dbname=$database", $insertUsername, $password);
-                                $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                                $sessionId = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
-                                $sql = "INSERT INTO chimeraSessions (sessionId, userId, sessionIP) VALUES ('".$sessionId."','".$result['userId']."','".$ip."')";
-                                $stmt=$db2->prepare($sql);
-                                $stmt->execute();
-                                echo "<meta http-equiv=\"Refresh\" content=\"0; url=../\">";
+                            if(count($_COOKIE)>0) {
+                                if (password_verify($_POST['password'], $result['userPassword'])) {
+                                    $db2 = new PDO("mysql:host=$server;dbname=$database", $insertUsername, $password);
+                                    $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                                    $sessionId = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+                                    $sql = "INSERT INTO chimeraSessions (sessionId, userId, sessionIP) VALUES ('" . $sessionId . "','" . $result['userId'] . "','" . $ip . "')";
+                                    $stmt = $db2->prepare($sql);
+                                    $stmt->execute();
+                                    setcookie('chimeraSession', $sessionId, (60 * 30));
+                                    echo "<meta http-equiv=\"Refresh\" content=\"0; url=../\">";
+                                } else {
+                                    echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
+                                }
+                                $db2=null;
+                            } else {
+                                echo "<h3 style='color: darkred'>Cookies are required!</h3>";
                             }
-                            else
-                            {
-                                echo "<h3 style='color: darkred'> Wrong Email or Password";
-                            }
-
                             $db=null;
-                            $db2=null;
+
                         }catch(Exception $e){
-                            echo "<h3 style='color: darkred'> Wrong Email or Password";
+                            echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
                         }
                     } else {
-                        echo "Missing Inputs";
+                        echo "<h3 style='color: darkred'>Missing Inputs</h3>";
                     }
                 }
                 ?>

@@ -68,8 +68,24 @@
         </div>
     </nav>
     <div class="row">
-        <div class="col-md-12">
-            <div style="text-align:center;width:100%;">
+        <div id="GalleryArea" class="col-md-12">
+            <div id="GalleryHeader">
+                <?php
+                require_once ("../Sessions.php");
+                $id = isLoggedIn();
+                if($id!="false")
+                {
+                    echo "";
+                    echo "<h6 id='GalleryUploadBar'><a href='#'>My Albums</a></h6>\n";
+                    echo "";
+                }
+                else
+                {
+                    echo "<h6 id='GalleryUploadBar'><a href='../Login'>Login to Upload Albums</a></h6>";
+                }
+                ?>
+            </div>
+            <div id="GalleryAlbumList">
 
             </div>
         </div>
