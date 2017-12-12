@@ -1,3 +1,53 @@
+<?php
+ob_start(); // Initiate the output buffer
+?>
+<?php
+require_once ("../Config.php");
+$server = SERVERNAME;
+$database = DATABASE;
+$username = SELECTUSERNAME;
+$insertUsername = USERNAME;
+$password = PASSWORD;
+
+$ip = getenv('HTTP_CLIENT_IP')?:getenv('HTTP_X_FORWARDED_FOR')?:getenv('HTTP_X_FORWARDED')?:getenv('HTTP_FORWARDED_FOR')?:getenv('HTTP_FORWARDED')?:getenv('REMOTE_ADDR');
+
+if (isset($_POST['submit'])) {
+    if ($_POST["email"] != null and $_POST["password"] != null) {
+        try {
+            //setcookie('chimeraSession', '', (60 * 30));
+            $db = new PDO("mysql:host=$server;dbname=$database", $username, $password);
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $sql="SELECT userId, userPassword FROM chimeraSecurityUsers WHERE userEmail = '".$_POST['email']."'";
+            $stmt=$db->prepare($sql);
+            $stmt->execute();
+            $result=$stmt->fetch();
+            //if(count($_COOKIE)>0) {
+            if (password_verify($_POST['password'], $result['userPassword'])) {
+                $db2 = new PDO("mysql:host=$server;dbname=$database", $insertUsername, $password);
+                $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $sessionId = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+                $sql = "INSERT INTO chimeraSessions (sessionId, userId, sessionIP) VALUES ('" . $sessionId . "','" . $result['userId'] . "','" . $ip . "')";
+                $stmt = $db2->prepare($sql);
+                $stmt->execute();
+                setcookie('chimeraSession', $sessionId, time()+(60 * 30), "/");
+                echo "<meta http-equiv=\"Refresh\" content=\"0; url=../\">";
+            } else {
+                echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
+            }
+            $db2=null;
+            // } else {
+            //    echo "<h3 style='color: darkred'>Cookies are required!</h3>";
+            // }
+            $db=null;
+
+        }catch(Exception $e){
+            echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
+        }
+    } else {
+        echo "<h3 style='color: darkred'>Missing Inputs</h3>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -40,53 +90,7 @@
             <div style="text-align:center;width:100%;">
                 <div style="width:20%;float:left;"></div>
                 <div style="width:60%;float:initial;">
-                <?php
-                require_once ("../Config.php");
-                $server = SERVERNAME;
-                $database = DATABASE;
-                $username = SELECTUSERNAME;
-                $insertUsername = USERNAME;
-                $password = PASSWORD;
 
-                $ip = getenv('HTTP_CLIENT_IP')?:getenv('HTTP_X_FORWARDED_FOR')?:getenv('HTTP_X_FORWARDED')?:getenv('HTTP_FORWARDED_FOR')?:getenv('HTTP_FORWARDED')?:getenv('REMOTE_ADDR');
-
-                if (isset($_POST['submit'])) {
-                    if ($_POST["email"] != null and $_POST["password"] != null) {
-                        try {
-
-                            $db = new PDO("mysql:host=$server;dbname=$database", $username, $password);
-                            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                            $sql="SELECT userId, userPassword FROM chimeraSecurityUsers WHERE userEmail = '".$_POST['email']."'";
-                            $stmt=$db->prepare($sql);
-                            $stmt->execute();
-                            $result=$stmt->fetch();
-                            if(count($_COOKIE)>0) {
-                                if (password_verify($_POST['password'], $result['userPassword'])) {
-                                    $db2 = new PDO("mysql:host=$server;dbname=$database", $insertUsername, $password);
-                                    $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                                    $sessionId = sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
-                                    $sql = "INSERT INTO chimeraSessions (sessionId, userId, sessionIP) VALUES ('" . $sessionId . "','" . $result['userId'] . "','" . $ip . "')";
-                                    $stmt = $db2->prepare($sql);
-                                    $stmt->execute();
-                                    setcookie('chimeraSession', $sessionId, (60 * 30));
-                                    echo "<meta http-equiv=\"Refresh\" content=\"0; url=../\">";
-                                } else {
-                                    echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
-                                }
-                                $db2=null;
-                            } else {
-                                echo "<h3 style='color: darkred'>Cookies are required!</h3>";
-                            }
-                            $db=null;
-
-                        }catch(Exception $e){
-                            echo "<h3 style='color: darkred'> Wrong Email or Password</h3>";
-                        }
-                    } else {
-                        echo "<h3 style='color: darkred'>Missing Inputs</h3>";
-                    }
-                }
-                ?>
                     <form action method="post" enctype="multipart/form-data" style="width:initial;">
                         <div id="formlabel"><strong>Email:</strong></div>
                         <div id="formInput"><input class="form-control" name="email" type="email"></div>
@@ -103,3 +107,6 @@
 </body>
 
 </html>
+<?php
+ob_end_flush(); // Flush the output from the buffer
+?>
