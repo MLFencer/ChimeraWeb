@@ -25,7 +25,7 @@ $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql="UPDATE chimeraSessions SET statusId = '640888a4-6f15-4a6b-8768-ead879a0b0b4' WHERE sessionId = '".$result['sessionId']."'";
 $stmt=$db2->prepare($sql);
 $stmt->execute();
-
+setcookie('chimeraSession', '', time()-3600, '/');
 $db=null;
 $db2 = null;
 
