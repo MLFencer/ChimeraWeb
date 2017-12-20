@@ -57,6 +57,7 @@ echo "</div>";
             </div>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
+                    <li role="presentation"><a href="/Servers">Servers</a></li>
                     <li role="presentation"><a href="#">Forum</a></li>
                     <li role="presentation"><a href="#">Gallery</a></li>
                     <li role="presentation"><a href="http://chimeragaming.org/UserList">User List</a></li>
